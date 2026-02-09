@@ -6,14 +6,14 @@
     },
     "plugins": [
         {
-            "name": "windmill-claude-plugin",
-            "source": "./windmill-claude-plugin",
+            "name": "windmill-code-plugin",
+            "source": "./plugins/windmill-code-plugin",
             "description": "Windmill development skills for writing scripts, flows, triggers, schedules, and more",
             "version": "1.0.0",
             "author": {
                 "name": "Windmill Labs"
             },
-            "repository": "https://github.com/windmill-labs/windmill"
+            "repository": "https://github.com/windmill-labs/windmill-claude-plugin"
         }
     ]
 }
