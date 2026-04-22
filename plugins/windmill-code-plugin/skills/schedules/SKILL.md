@@ -39,6 +39,8 @@ Windmill uses 6-field cron expressions (includes seconds):
 
 ## CLI Commands
 
+After writing, tell the user they can run these commands (do NOT run them yourself):
+
 ```bash
 # Push schedules to Windmill
 wmill sync push
@@ -77,6 +79,9 @@ properties:
   args:
     type: object
     description: The arguments to pass to the script or flow
+  permissioned_as:
+    type: string
+    description: The user or group this schedule runs as (e.g., 'u/admin' or 'g/mygroup')
   on_failure:
     type: string
     description: Path to a script or flow to run when the scheduled job fails
@@ -172,10 +177,15 @@ properties:
     type: string
     description: Path to a script that validates scheduled datetimes. Receives scheduled_for
       datetime and returns boolean to skip (true) or run (false)
+  labels:
+    type: array
+    items:
+      type: string
 required:
 - schedule
 - script_path
 - timezone
 - is_flow
 - enabled
+- permissioned_as
 ```

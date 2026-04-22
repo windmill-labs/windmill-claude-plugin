@@ -18,6 +18,8 @@ Examples:
 
 ## CLI Commands
 
+After writing, tell the user they can run these commands (do NOT run them yourself):
+
 ```bash
 # Push trigger configuration
 wmill sync push
@@ -37,9 +39,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   route_path:
     type: string
     description: The URL route path that will trigger this endpoint (e.g., 'api/myendpoint').
@@ -148,6 +157,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - route_path
 - request_type
@@ -169,9 +179,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   url:
     type: string
     description: The WebSocket URL to connect to (can be a static URL or computed
@@ -186,6 +203,13 @@ properties:
         value: {}
     description: Array of key-value filters to match incoming messages (only matching
       messages trigger the script)
+  filter_logic:
+    type: string
+    enum:
+    - and
+    - or
+    description: Logic to apply when evaluating filters. 'and' requires all filters
+      to match, 'or' requires any filter to match.
   initial_messages:
     type: array
     items:
@@ -202,6 +226,21 @@ properties:
   can_return_error_result:
     type: boolean
     description: If true, error results are sent back through the WebSocket
+  heartbeat:
+    type: object
+    properties:
+      interval_secs:
+        type: integer
+        minimum: 1
+        description: Interval in seconds between heartbeat messages
+      message:
+        type: string
+        description: Message to send as heartbeat. Use {{state}} as a placeholder
+          for a value extracted from incoming messages (see state_field).
+      state_field:
+        type: string
+        description: Optional. Top-level JSON field to extract from incoming messages.
+          The extracted value replaces {{state}} in the heartbeat message.
   error_handler_path:
     type: string
     description: Path to a script or flow to run when the triggered job fails
@@ -245,6 +284,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - url
 - filters
@@ -262,9 +302,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   kafka_resource_path:
     type: string
     description: Path to the Kafka resource containing connection configuration
@@ -284,6 +331,25 @@ properties:
         key:
           type: string
         value: {}
+  filter_logic:
+    type: string
+    enum:
+    - and
+    - or
+    description: Logic to apply when evaluating filters. 'and' requires all filters
+      to match, 'or' requires any filter to match.
+  auto_offset_reset:
+    type: string
+    enum:
+    - latest
+    - earliest
+    description: Initial offset behavior when consumer group has no committed offset.
+      'latest' starts from new messages only, 'earliest' starts from the beginning.
+  auto_commit:
+    type: boolean
+    description: When true (default), offsets are committed automatically after receiving
+      each message. When false, you must manually commit offsets using the commit_offsets
+      endpoint.
   error_handler_path:
     type: string
     description: Path to a script or flow to run when the triggered job fails
@@ -327,6 +393,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - kafka_resource_path
 - group_id
@@ -344,9 +411,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   nats_resource_path:
     type: string
     description: Path to the NATS resource containing connection configuration
@@ -407,6 +481,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - nats_resource_path
 - use_jetstream
@@ -423,9 +498,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   postgres_resource_path:
     type: string
     description: Path to the PostgreSQL resource containing connection configuration
@@ -479,6 +561,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - postgres_resource_path
 - replication_slot_name
@@ -495,9 +578,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   mqtt_resource_path:
     type: string
     description: Path to the MQTT resource containing broker connection configuration
@@ -572,6 +662,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - subscribe_topics
 - mqtt_resource_path
@@ -587,9 +678,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   queue_url:
     type: string
     description: The full URL of the AWS SQS queue to poll for messages
@@ -649,6 +747,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - queue_url
 - aws_resource_path
@@ -665,9 +764,16 @@ properties:
   script_path:
     type: string
     description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
   is_flow:
     type: boolean
     description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
   gcp_resource_path:
     type: string
     description: Path to the GCP resource containing service account credentials for
@@ -746,6 +852,7 @@ properties:
     description: Retry configuration for failed module executions
 required:
 - script_path
+- permissioned_as
 - is_flow
 - gcp_resource_path
 - topic_id
