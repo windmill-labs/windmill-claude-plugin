@@ -1,0 +1,57 @@
+name: Sync generated skills
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout plugin repo
+        uses: actions/checkout@v4
+
+      - name: Checkout windmill
+        uses: actions/checkout@v4
+        with:
+          repository: windmill-labs/windmill
+          path: windmill
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install generator dependency
+        run: pip install pyyaml
+
+      - name: Refresh plugin skills
+        run: python windmill/system_prompts/generate.py --plugin-dir .
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: ci/sync-generated-skills
+          commit-message: "feat: refresh generated plugin skills"
+          title: "feat: refresh generated plugin skills"
+          body: |
+            ## Summary
+            Refresh the generated Claude Code plugin skills from the current Windmill system prompts.
+
+            ## Changes
+            - regenerate standalone plugin `SKILL.md` files from `windmill/system_prompts/generate.py`
+            - update generated skill content to match the latest Windmill CLI guidance and schemas
+
+            ## Test plan
+            - [x] Run `python windmill/system_prompts/generate.py --plugin-dir .`
+
+            ---
+            Generated with [Claude Code](https://claude.com/claude-code)
+          delete-branch: true
+          draft: true
