@@ -34,6 +34,7 @@ Write Windmill scripts in any supported language:
 - **C#** — `/write-script-csharp`
 - **Java** — `/write-script-java`
 - **PowerShell** — `/write-script-powershell`
+- **R** — `/write-script-rlang`
 
 ### Queries
 

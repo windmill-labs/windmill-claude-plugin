@@ -18,7 +18,7 @@ This interactive command creates a complete app structure with your choice of fr
 ## App Structure
 
 ```
-my_app.raw_app/
+my_app__raw_app/
 ├── AGENTS.md              # AI agent instructions (auto-generated)
 ├── DATATABLES.md          # Database schemas (run 'wmill app generate-agents' to refresh)
 ├── raw_app.yaml           # App configuration (summary, path, data settings)
@@ -30,7 +30,7 @@ my_app.raw_app/
 ├── backend/               # Backend runnables (server-side scripts)
 │   ├── <id>.<ext>         # Code file (e.g., get_user.ts)
 │   ├── <id>.yaml          # Optional: config for fields, or to reference existing scripts
-│   └── <id>.lock          # Lock file (run 'wmill app generate-locks' to create)
+│   └── <id>.lock          # Lock file (run 'wmill generate-metadata' to create/update)
 └── sql_to_apply/          # SQL migrations (dev only, not synced)
     └── *.sql              # SQL files to apply via dev server
 ```
@@ -84,9 +84,9 @@ export async function main(user_id: string) {
 }
 ```
 
-After creating, generate lock files:
+After creating, tell the user they can generate lock files by running:
 ```bash
-wmill app generate-locks
+wmill generate-metadata
 ```
 
 ### Optional YAML Configuration
@@ -237,12 +237,14 @@ data:
 
 ## CLI Commands
 
+Tell the user they can run these commands (do NOT run them yourself):
+
 | Command | Description |
 |---------|-------------|
 | `wmill app new` | Create a new raw app interactively |
 | `wmill app dev` | Start dev server with live reload |
 | `wmill app generate-agents` | Refresh AGENTS.md and DATATABLES.md |
-| `wmill app generate-locks` | Generate lock files for backend runnables |
+| `wmill generate-metadata` | Generate lock files for backend runnables |
 | `wmill sync push` | Deploy app to Windmill |
 | `wmill sync pull` | Pull latest from Windmill |
 
@@ -253,4 +255,4 @@ data:
 3. **Keep runnables focused** - one function per file
 4. **Use descriptive IDs** - `get_user.ts` not `a.ts`
 5. **Always whitelist tables** - add to `data.tables` before querying
-6. **Generate locks** - run `wmill app generate-locks` after adding/modifying backend runnables
+6. **Generate locks** - tell the user to run `wmill generate-metadata` after adding/modifying backend runnables
