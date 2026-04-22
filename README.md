@@ -7,7 +7,7 @@ It adds Windmill-specific skills and guidance so Claude Code can work with:
 - flows, triggers, schedules, resources, and raw apps
 - Windmill CLI conventions and generated platform guidance
 
-The plugin content is generated from the source-of-truth system prompts in the main Windmill repo and is refreshed automatically.
+The plugin content is generated from the source-of-truth system prompts in the main Windmill repo.
 
 ## Installation
 
