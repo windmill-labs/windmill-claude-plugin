@@ -15,6 +15,49 @@ Examples:
 - `u/user/webhook.http_trigger.yaml`
 - `f/data/kafka_consumer.kafka_trigger.yaml`
 - `f/sync/postgres_cdc.postgres_trigger.yaml`
+- `f/inbound/orders.email_trigger.yaml`
+
+## Email Triggers
+
+An email trigger routes incoming emails to a script or flow. Each trigger reserves a local-part: emails sent to `<local_part>@<windmill_email_domain>` are delivered to the configured runnable. Set `workspaced_local_part: true` to namespace it per workspace (the actual recipient becomes `<workspace_id>-<local_part>@…`); on Windmill Cloud this is required.
+
+Senders may append URL-style extras to the local-part with `+`: `mytrigger+foo=bar+baz=qux@…`. They flow through to the script as `email_extra_args` (see below).
+
+### Payload
+
+The runnable receives:
+
+- `parsed_email` — `{ headers, text_body, html_body, attachments[] }`. Each `attachment` has `{ headers, body }`.
+- `raw_email` — the raw RFC 822 message as a string, **or** an S3 object (`{ s3: "windmill_emails/<job_id>/raw.eml" }`) if the message exceeds 1 MiB.
+- `email_extra_args` (optional, only when sender appended `+key=value` extras) — a flat object of the parsed extras.
+
+With a preprocessor, all of the above are nested under `event` along with `event.kind = "email"` and `event.trigger_path` (the trigger's path). Without a preprocessor, `trigger_path` is **not** exposed — add a preprocessor if you need it.
+
+### Attachments are S3 objects
+
+Binary attachments are uploaded to the workspace S3 bucket and surface in `parsed_email.attachments[i].body` as:
+
+```json
+{ "s3": "windmill_emails/<job_id>/attachments/<filename>" }
+```
+
+To read the bytes inside a script, use the wmill SDK:
+
+```ts
+// TypeScript
+import * as wmill from "windmill-client"
+const file = await wmill.loadS3File(parsed_email.attachments[0].body)
+```
+
+```python
+# Python
+import wmill
+data = wmill.load_s3_file(parsed_email["attachments"][0]["body"])
+```
+
+If the workspace has no S3 resource configured (Workspace Settings → Object storage), `body` falls back to the string `"configure s3 in the workspace settings to handle attachments"`. The same applies to large `raw_email` bodies. Email attachment storage requires the server to be built with the `parquet` feature.
+
+Text/HTML/inline parts are placed inline in `body` as strings.
 
 ## CLI Commands
 
@@ -859,4 +902,166 @@ required:
 - subscription_id
 - delivery_type
 - subscription_mode
+```
+
+## AzureTrigger (`*.azure_trigger.yaml`)
+
+Must be a YAML file that adheres to the following schema:
+
+```yaml
+type: object
+properties:
+  script_path:
+    type: string
+    description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
+  is_flow:
+    type: boolean
+    description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
+  azure_resource_path:
+    type: string
+  azure_mode:
+    type: string
+    enum:
+    - basic_push
+    - namespace_push
+    - namespace_pull
+    description: Azure Event Grid trigger mode.
+  scope_resource_id:
+    type: string
+    description: ARM resource ID of the topic (basic) or namespace (namespace modes).
+  topic_name:
+    type: string
+    description: Topic name within the namespace (namespace modes only).
+  subscription_name:
+    type: string
+  event_type_filters:
+    type: array
+    items:
+      type: string
+  error_handler_path:
+    type: string
+  error_handler_args:
+    type: object
+    description: The arguments to pass to the script or flow
+  retry:
+    type: object
+    properties:
+      constant:
+        type: object
+        description: Retry with constant delay between attempts
+        properties:
+          attempts:
+            type: integer
+            description: Number of retry attempts
+          seconds:
+            type: integer
+            description: Seconds to wait between retries
+      exponential:
+        type: object
+        description: Retry with exponential backoff (delay doubles each time)
+        properties:
+          attempts:
+            type: integer
+            description: Number of retry attempts
+          multiplier:
+            type: integer
+            description: Multiplier for exponential backoff
+          seconds:
+            type: integer
+            minimum: 1
+            description: Initial delay in seconds
+          random_factor:
+            type: integer
+            minimum: 0
+            maximum: 100
+            description: Random jitter percentage (0-100) to avoid thundering herd
+      retry_if:
+        $ref: '#/components/schemas/RetryIf'
+    description: Retry configuration for failed module executions
+required:
+- script_path
+- permissioned_as
+- is_flow
+- azure_resource_path
+- azure_mode
+- scope_resource_id
+- subscription_name
+```
+
+## EmailTrigger (`*.email_trigger.yaml`)
+
+Must be a YAML file that adheres to the following schema:
+
+```yaml
+type: object
+properties:
+  script_path:
+    type: string
+    description: Path to the script or flow to execute when triggered
+  permissioned_as:
+    type: string
+    description: The user or group this trigger runs as (permissioned_as)
+  is_flow:
+    type: boolean
+    description: True if script_path points to a flow, false if it points to a script
+  labels:
+    type: array
+    items:
+      type: string
+  local_part:
+    type: string
+  workspaced_local_part:
+    type: boolean
+  error_handler_path:
+    type: string
+  error_handler_args:
+    type: object
+    description: The arguments to pass to the script or flow
+  retry:
+    type: object
+    properties:
+      constant:
+        type: object
+        description: Retry with constant delay between attempts
+        properties:
+          attempts:
+            type: integer
+            description: Number of retry attempts
+          seconds:
+            type: integer
+            description: Seconds to wait between retries
+      exponential:
+        type: object
+        description: Retry with exponential backoff (delay doubles each time)
+        properties:
+          attempts:
+            type: integer
+            description: Number of retry attempts
+          multiplier:
+            type: integer
+            description: Multiplier for exponential backoff
+          seconds:
+            type: integer
+            minimum: 1
+            description: Initial delay in seconds
+          random_factor:
+            type: integer
+            minimum: 0
+            maximum: 100
+            description: Random jitter percentage (0-100) to avoid thundering herd
+      retry_if:
+        $ref: '#/components/schemas/RetryIf'
+    description: Retry configuration for failed module executions
+required:
+- script_path
+- permissioned_as
+- is_flow
+- local_part
 ```
