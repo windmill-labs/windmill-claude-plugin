@@ -31,7 +31,7 @@ app related commands
   - `--json` - Output as JSON (for piping to jq)
 - `app get <path:string>` - get an app's details
   - `--json` - Output as JSON (for piping to jq)
-- `app push <file_path:string> <remote_path:string>` - push a local app 
+- `app push [file_path:string] [remote_path:string]` - push a local app. With no args, infers the app from the current directory and the remote path from its location relative to wmill.yaml.
 - `app dev [app_folder:string]` - Start a development server for building apps with live reload and hot module replacement
   - `--port <port:number>` - Port to run the dev server on (will find next available port if occupied)
   - `--host <host:string>` - Host to bind the dev server to
@@ -40,6 +40,13 @@ app related commands
 - `app lint [app_folder:string]` - Lint a raw app folder to validate structure and buildability
   - `--fix` - Attempt to fix common issues (not implemented yet)
 - `app new` - create a new raw app from a template
+  - `--summary <summary:string>` - App summary (short description). Skips the prompt when provided. Triggers non-interactive mode.
+  - `--path <path:string>` - App path (e.g., f/folder/my_app or u/username/my_app). Skips the prompt when provided. Triggers non-interactive mode.
+  - `--framework <framework:string>` - Framework template: react19 | react18 | svelte5 | vue. Skips the prompt when provided. Triggers non-interactive mode.
+  - `--datatable <datatable:string>` - Datatable to wire up. Without this flag in non-interactive mode, no datatable is configured.
+  - `--schema <schema:string>` - Schema to use with --datatable. Created (CREATE SCHEMA IF NOT EXISTS) if it doesn't already exist.
+  - `--overwrite` - Overwrite the target directory if it already exists, without prompting.
+  - `--no-open-in-desktop` - Do not prompt to open the new app in Claude Desktop.
 - `app generate-agents [app_folder:string]` - regenerate AGENTS.md and DATATABLES.md from remote workspace
 - `app set-permissioned-as <path:string> <email:string>` - Set the on_behalf_of_email for an app (requires admin or wm_deployers group)
 
@@ -76,10 +83,13 @@ workspace dependencies related commands
 
 ### dev
 
-Launch a dev server that watches for local file changes and auto-pushes them to the remote workspace. Provides live reload for scripts and flows during development.
+Watch local file changes and live-reload the dev page for preview. Does NOT deploy to the remote workspace — use wmill sync push for that.
 
 **Options:**
-- `--includes <pattern...:string>` - Filter paths givena glob pattern or path
+- `--includes <pattern...:string>` - Filter paths given a glob pattern or path
+- `--proxy-port <port:number>` - Port for a localhost reverse proxy to the remote Windmill server
+- `--path <path:string>` - Watch a specific windmill path (e.g., u/admin/my_script or f/my_flow)
+- `--no-open` - Do not open the browser automatically
 
 ### docs
 
@@ -163,8 +173,19 @@ Generate metadata (locks, schemas) for all scripts, flows, and apps
 - `--skip-flows` - Skip processing flows
 - `--skip-apps` - Skip processing apps
 - `--strict-folder-boundaries` - Only update items inside the specified folder (requires folder argument)
+- `--parallel <n:number>` - Number of items to process in parallel
 - `-i --includes <patterns:file[]>` - Comma separated patterns to specify which files to include
 - `-e --excludes <patterns:file[]>` - Comma separated patterns to specify which files to exclude
+
+**Subcommands:**
+
+- `generate-metadata rehash [folder:string]`
+  - `--skip-scripts` - Skip processing scripts
+  - `--skip-flows` - Skip processing flows
+  - `--skip-apps` - Skip processing apps
+  - `--parallel <n:number>` - Number of items to process in parallel
+  - `-i --includes <patterns:file[]>` - Comma separated patterns to specify which files to include
+  - `-e --excludes <patterns:file[]>` - Comma separated patterns to specify which files to exclude
 
 ### gitsync-settings
 
@@ -266,6 +287,11 @@ sync local with a remote instance or the opposite (push or pull)
   - `-o, --output-file <file:string>` - Write YAML to a file instead of stdout
   - `--show-secrets` - Include sensitive fields (license key, JWT secret) without prompting
   - `--instance <instance:string>` - Name of the instance, override the active instance
+- `instance connect-slack`
+  - `--bot-token <bot_token:string>` - Slack bot token (xoxb-...)
+  - `--team-id <team_id:string>` - Slack team id
+  - `--team-name <team_name:string>` - Slack team name
+  - `--instance <instance:string>` - Instance profile to connect against (defaults to the active instance)
 
 ### job
 
@@ -308,6 +334,20 @@ Validate Windmill flow, schedule, and trigger YAML files in a directory
 - `--fail-on-warn` - Exit with code 1 when warnings are emitted
 - `--locks-required` - Fail if scripts or flow inline scripts that need locks have no locks
 - `-w, --watch` - Watch for file changes and re-lint automatically
+
+### protection-rules
+
+**Subcommands:**
+
+- `protection-rules pull [workspace:string]` - Pull protection rules from Windmill into protection-rules.yaml for a workspace
+  - `--all` - Pull every workspace defined in wmill.yaml
+  - `--dry-run` - Show what would change without writing the file
+  - `--json-output` - Output in JSON format
+- `protection-rules push [workspace:string]` - Push protection rules from protection-rules.yaml to Windmill for a workspace (full reconcile: creates, updates, and deletes)
+  - `--all` - Push every workspace defined in protection-rules.yaml
+  - `--dry-run` - Show what would change without applying
+  - `--json-output` - Output in JSON format
+  - `--yes` - Skip the confirmation prompt (including deletions)
 
 ### queues
 
@@ -369,6 +409,7 @@ schedule related commands
 - `schedule new <path:string>` - create a new schedule locally
 - `schedule push <file_path:string> <remote_path:string>` - push a local schedule spec. This overrides any remote versions.
 - `schedule enable <path:string>` - Enable a schedule
+  - `--force` - Bypass the fork-conflict warning when the parent workspace has the same schedule (acknowledges that both crons will fire)
 - `schedule disable <path:string>` - Disable a schedule
 - `schedule set-permissioned-as <path:string> <email:string>` - Set the email (run-as user) for a schedule (requires admin or wm_deployers group)
 
@@ -507,12 +548,12 @@ trigger related commands
   - `--json` - Output as JSON (for piping to jq)
 - `trigger get <path:string>` - get a trigger's details
   - `--json` - Output as JSON (for piping to jq)
-  - `--kind <kind:string>` - Trigger kind (http, websocket, kafka, nats, postgres, mqtt, sqs, gcp, email). Recommended for faster lookup
+  - `--kind <kind:string>` - Trigger kind (http, websocket, kafka, nats, postgres, mqtt, sqs, gcp, azure, email). Recommended for faster lookup
 - `trigger new <path:string>` - create a new trigger locally
-  - `--kind <kind:string>` - Trigger kind (required: http, websocket, kafka, nats, postgres, mqtt, sqs, gcp, email)
+  - `--kind <kind:string>` - Trigger kind (required: http, websocket, kafka, nats, postgres, mqtt, sqs, gcp, azure, email)
 - `trigger push <file_path:string> <remote_path:string>` - push a local trigger spec. This overrides any remote versions.
 - `trigger set-permissioned-as <path:string> <email:string>` - Set the email (run-as user) for a trigger (requires admin or wm_deployers group)
-  - `--kind <kind:string>` - Trigger kind (required: http, websocket, kafka, nats, postgres, mqtt, sqs, gcp, email)
+  - `--kind <kind:string>` - Trigger kind (required: http, websocket, kafka, nats, postgres, mqtt, sqs, gcp, azure, email)
 
 ### user
 
@@ -593,6 +634,7 @@ workspace related commands
 - `workspace whoami` - Show the currently active user
 - `workspace list` - List local workspace profiles
 - `workspace list-remote` - List workspaces on the remote server that you have access to
+  - `--as-superadmin` - List ALL workspaces on the instance (requires the token to belong to a superadmin/devops user)
 - `workspace list-forks` - List forked workspaces on the remote server
 - `workspace bind` - Create or update a workspace entry in wmill.yaml from the active profile
   - `--workspace <name:string>` - Workspace name (default: current branch or workspaceId)
@@ -614,4 +656,9 @@ workspace related commands
   - `--exclude <items:string>` - Comma-separated kind:path items to exclude
   - `--preserve-on-behalf-of` - Preserve original on_behalf_of/permissioned_as values
   - `-y --yes` - Non-interactive mode (deploy without prompts)
+- `workspace connect-slack` - Non-interactively connect Slack to the active workspace using a pre-minted bot token (xoxb-...). Produces the same artifacts as the UI OAuth flow: workspace_settings fields, g/slack group, f/slack_bot folder, and the encrypted bot token variable + resource at f/slack_bot/bot_token.
+  - `--bot-token <bot_token:string>` - Slack bot token (xoxb-...)
+  - `--team-id <team_id:string>` - Slack team id
+  - `--team-name <team_name:string>` - Slack team name
+- `workspace disconnect-slack`
 
