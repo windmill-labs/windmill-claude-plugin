@@ -71,6 +71,27 @@ Show all available wmill.yaml configuration options
 
 - `config migrate` - Migrate wmill.yaml from gitBranches/environments to workspaces format
 
+### datatable
+
+datatable related commands
+
+**Subcommands:**
+
+- `datatable list` - list all datatables in the workspace
+  - `--json` - Output as JSON (for piping to jq)
+- `datatable run <sql:string>` - run a SQL query on a datatable
+  - `-n --name <name:string>` - Datatable name (default: main)
+  - `-s --silent` - Output only the final result as JSON. Useful for scripting.
+- `datatable serve` - Serve all datatables as a Postgres-wire endpoint (psql, DBeaver, pgAdmin); the client picks the datatable via the database name in its connection string
+  - `--port <port:number>` - Port to listen on (default: first free port in 5433-5500)
+  - `--host <host:string>` - Bind address (default: 127.0.0.1)
+  - `--password <password:string>` - Password for Postgres clients (default: generate a random password at startup)
+- `datatable psql` - Start a serve listener and launch psql connected to it
+  - `-n --name <name:string>` - Datatable to connect psql to (default: main)
+  - `--port <port:number>` - Port the proxy listens on (default: first free port in 5433-5500)
+  - `--host <host:string>` - Bind address for the proxy (default: 127.0.0.1)
+  - `--password <password:string>` - Password for the temporary Postgres proxy (default: generate a random password at startup)
+
 ### dependencies
 
 workspace dependencies related commands
@@ -99,6 +120,18 @@ Search Windmill documentation.
 
 **Options:**
 - `--json` - Output results as JSON.
+
+### ducklake
+
+ducklake related commands
+
+**Subcommands:**
+
+- `ducklake list` - list all ducklakes in the workspace
+  - `--json` - Output as JSON (for piping to jq)
+- `ducklake run <sql:string>` - run a SQL query on a ducklake
+  - `-n --name <name:string>` - Ducklake name (default: main)
+  - `-s --silent` - Output only the final result as JSON. Useful for scripting.
 
 ### flow
 
