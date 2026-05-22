@@ -7,6 +7,5 @@
     },
     "homepage": "https://www.windmill.dev",
     "repository": "https://github.com/windmill-labs/windmill-claude-plugin",
-    "license": "Apache-2.0",
     "logo": "assets/logo.svg"
 }
