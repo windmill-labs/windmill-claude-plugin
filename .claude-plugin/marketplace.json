@@ -6,8 +6,8 @@
     },
     "plugins": [
         {
-            "name": "windmill-code-plugin",
-            "source": "./plugins/windmill-code-plugin",
+            "name": "windmill",
+            "source": "./plugins/windmill",
             "description": "Windmill development skills for writing scripts, flows, triggers, schedules, and more",
             "version": "1.0.0",
             "author": {

@@ -20,5 +20,5 @@ Add the marketplace:
 Install the plugin:
 
 ```
-/plugin install windmill-code-plugin@windmill
+/plugin install windmill@windmill
 ```
