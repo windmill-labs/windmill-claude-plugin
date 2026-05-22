@@ -41,6 +41,7 @@ jobs:
           branch: ci/sync-generated-skills
           commit-message: "feat: refresh generated plugin skills"
           title: "feat: refresh generated plugin skills"
+          add-paths: plugins/
           body: |
             ## Summary
             Refresh the generated Claude Code plugin skills from the current Windmill system prompts.
