@@ -5,5 +5,7 @@
     "author": {
         "name": "Windmill Labs"
     },
-    "repository": "https://github.com/windmill-labs/windmill-claude-plugin"
+    "homepage": "https://www.windmill.dev",
+    "repository": "https://github.com/windmill-labs/windmill-claude-plugin",
+    "license": "Apache-2.0"
 }
