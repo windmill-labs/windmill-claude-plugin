@@ -16,7 +16,7 @@ The plugin content is generated from the source-of-truth system prompts in the m
 Add the marketplace, then install the plugin:
 
 ```
-/plugin marketplace add windmill-labs/windmill-claude-plugin
+/plugin marketplace add https://github.com/windmill-labs/windmill-claude-plugin
 /plugin install windmill@windmill
 ```
 
