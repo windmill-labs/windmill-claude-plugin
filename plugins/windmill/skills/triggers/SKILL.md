@@ -92,6 +92,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   route_path:
     type: string
     description: The URL route path that will trigger this endpoint (e.g., 'api/myendpoint').
@@ -232,6 +252,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   url:
     type: string
     description: The WebSocket URL to connect to (can be a static URL or computed
@@ -355,6 +395,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   kafka_resource_path:
     type: string
     description: Path to the Kafka resource containing connection configuration
@@ -464,6 +524,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   nats_resource_path:
     type: string
     description: Path to the NATS resource containing connection configuration
@@ -551,6 +631,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   postgres_resource_path:
     type: string
     description: Path to the PostgreSQL resource containing connection configuration
@@ -631,6 +731,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   mqtt_resource_path:
     type: string
     description: Path to the MQTT resource containing broker connection configuration
@@ -731,6 +851,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   queue_url:
     type: string
     description: The full URL of the AWS SQS queue to poll for messages
@@ -817,6 +957,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   gcp_resource_path:
     type: string
     description: Path to the GCP resource containing service account credentials for
@@ -924,6 +1084,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   azure_resource_path:
     type: string
   azure_mode:
@@ -1015,6 +1195,26 @@ properties:
     type: array
     items:
       type: string
+  draft_only:
+    type: boolean
+    description: 'True when this row is a per-user draft with no deployed
+
+      trigger at the same path. Set by list endpoints when
+
+      `include_draft_only=true` synthesizes the row from the
+
+      draft. Frontend renders a "Draft" badge.
+
+      '
+  is_draft:
+    type: boolean
+    description: 'True when the authed user has a per-user draft at this path
+
+      (over a deployed row or a synthesized draft-only row).
+
+      Frontend appends a `*` to the displayed name.
+
+      '
   local_part:
     type: string
   workspaced_local_part:
